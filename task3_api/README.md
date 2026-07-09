@@ -52,3 +52,10 @@ python task3_api/test_api.py
 - `sql_routes.py` — MySQL CRUD + latest + range
 - `mongo_routes.py` — MongoDB CRUD + latest + range + window
 - `test_api.py` — smoke test for every endpoint on both databases
+
+## Verified locally
+
+With Task 2 databases seeded and the API running:
+
+- `python task3_api/test_api.py` — 21/21 checks passed (SQL + Mongo CRUD, latest, range, window)
+- `python task4_prediction/predict.py` — end-to-end forecast produced from `/mongo/readings/window`
