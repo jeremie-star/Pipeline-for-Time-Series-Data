@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# OS
+.DS_Store
+
+# Keep raw + processed data and trained model tracked (small) so the pipeline is reproducible.
+# If your model file gets large, uncomment the next line:
+# task1_eda_modeling/models/*.pkl
