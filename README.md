@@ -23,12 +23,11 @@ awareness and load management.
 ├── config.py                     # shared paths + DB credentials (env-overridable)
 ├── requirements.txt
 ├── data/
-│   ├── raw/energydata_complete.csv
-│   └── processed/
-├── task1_eda_modeling/           # Task 1  (Jeremie)  — EDA, features, model  [notebook]
-├── task2_databases/              # Task 2  (Celine)   — MySQL + MongoDB + ERD
-├── task3_api/                    # Task 3  (Gentil)   — FastAPI CRUD + time-series endpoints
-├── task4_prediction/             # Task 4  (Jeremie)  — end-to-end forecast script
+│   └── energydata_complete.csv
+├── eda_modeling/           # Task 1  (Jeremie)  — EDA, features, model  [notebook]
+├── databases/              # Task 2  (Celine)   — MySQL + MongoDB + ERD
+├── api/                    # Task 3  (Gentil)   — FastAPI CRUD + time-series endpoints
+├── prediction/             # Task 4  (Jeremie)  — end-to-end forecast script
 └── report/                       # PDF report source
 ```
 
