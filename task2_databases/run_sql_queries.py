@@ -1,10 +1,3 @@
-"""Task 2 - Run the SQL queries from sql/queries.sql and save results.
-
-Run:  python task2_databases/run_sql_queries.py
-Output: outputs/sql_results.md
-
-Author: Celine Shoga
-"""
 import os
 import sys
 
