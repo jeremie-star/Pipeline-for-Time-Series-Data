@@ -1,16 +1,3 @@
-"""Task 2 - Run the required MongoDB queries and save results.
-
-Run:  python task2_databases/run_mongo_queries.py
-Output: outputs/mongo_results.md
-
-Queries:
-  1. Latest record                       (time-series requirement)
-  2. Records in a date range             (time-series requirement)
-  3. Aggregation: average usage by hour
-  4. High-usage events (appliances > 600 Wh)
-
-Author: Celine Shoga
-"""
 import os
 import sys
 
