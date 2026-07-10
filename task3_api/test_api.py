@@ -1,9 +1,3 @@
-"""Smoke test for every SQL and MongoDB endpoint.
-
-Start the API first (uvicorn main:app) with Task 2 databases loaded, then:
-    python task3_api/test_api.py
-"""
-
 from __future__ import annotations
 
 import os
