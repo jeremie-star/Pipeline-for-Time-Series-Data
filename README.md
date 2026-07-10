@@ -27,8 +27,19 @@ task4_prediction/          fetch -> preprocess -> load model -> forecast
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-export MYSQL_PASSWORD='your_password'   # or edit config.py
-# MySQL and MongoDB must be running locally
+# MySQL/MariaDB and MongoDB must be running locally
+```
+
+Create a MySQL/MariaDB user for the app (once), then point the project at it:
+```bash
+mysql <<'SQL'
+CREATE DATABASE IF NOT EXISTS energy_ts;
+CREATE USER IF NOT EXISTS 'energy'@'localhost' IDENTIFIED BY 'energy_pw';
+GRANT ALL PRIVILEGES ON energy_ts.* TO 'energy'@'localhost';
+FLUSH PRIVILEGES;
+SQL
+
+export MYSQL_USER=energy MYSQL_PASSWORD=energy_pw   # or edit config.py
 ```
 
 ## Run
@@ -41,9 +52,9 @@ jupyter nbconvert --to notebook --execute --inplace \
 python task2_databases/load_sql.py    && python task2_databases/run_sql_queries.py
 python task2_databases/load_mongo.py  && python task2_databases/run_mongo_queries.py
 
-# Task 3 — start the API
-cd task3_api && uvicorn main:app --reload   # docs at http://127.0.0.1:8000/docs
-python task3_api/test_api.py                # smoke-test every endpoint
+# Task 3 — start the API (Swagger UI at /docs, ReDoc at /redoc)
+cd task3_api && uvicorn main:app --reload   # http://127.0.0.1:8000/docs
+python task3_api/test_api.py                # smoke-test every endpoint (expect 21 passed)
 
 # Task 4 — end-to-end forecast (API must be running)
 python task4_prediction/predict.py

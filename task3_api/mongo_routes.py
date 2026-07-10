@@ -41,8 +41,10 @@ def _next_reading_id() -> int:
     return (last["reading_id"] + 1) if last else 1
 
 
-@router.post("", response_model=ReadingOut, status_code=201)
+@router.post("", response_model=ReadingOut, status_code=201,
+             summary="Create a reading", response_description="The created reading")
 def create_reading(r: ReadingIn):
+    """Insert a new document. Returns 409 if the id or timestamp already exists."""
     new_id = _next_reading_id()
     document = {
         "reading_id": new_id,
@@ -59,28 +61,34 @@ def create_reading(r: ReadingIn):
     return {"reading_id": new_id, **r.model_dump()}
 
 
-@router.get("", response_model=list[ReadingOut])
+@router.get("", response_model=list[ReadingOut],
+            summary="List readings", response_description="Readings, newest first")
 def list_readings(limit: int = Query(20, ge=1, le=500), offset: int = Query(0, ge=0)):
+    """List documents ordered by timestamp descending, with limit/offset paging."""
     cursor = col.find().sort("timestamp", DESCENDING).skip(offset).limit(limit)
     return [_out(doc) for doc in cursor]
 
 
-@router.get("/latest", response_model=ReadingOut)
+@router.get("/latest", response_model=ReadingOut,
+            summary="Latest record (time-series)",
+            response_description="The most recent reading")
 def latest_reading():
-    """Return the single most recent document."""
+    """Time-series query: return the single most recent document by timestamp."""
     doc = col.find_one(sort=[("timestamp", DESCENDING)])
     if not doc:
         raise HTTPException(404, "No readings found")
     return _out(doc)
 
 
-@router.get("/range", response_model=list[ReadingOut])
+@router.get("/range", response_model=list[ReadingOut],
+            summary="Records by date range (time-series)",
+            response_description="Readings within [start, end]")
 def readings_by_range(
     start: datetime = Query(..., examples=["2016-01-11T17:00:00"]),
     end: datetime = Query(..., examples=["2016-01-11T20:00:00"]),
     limit: int = Query(500, ge=1, le=5000),
 ):
-    """Return documents whose timestamp falls in [start, end]."""
+    """Time-series query: documents whose timestamp falls in [start, end]."""
     if end < start:
         raise HTTPException(422, "end must be greater than or equal to start")
     cursor = (
@@ -91,7 +99,9 @@ def readings_by_range(
     return [_out(doc) for doc in cursor]
 
 
-@router.get("/window")
+@router.get("/window",
+            summary="Recent full-record feed (for forecasting)",
+            response_description="Raw-column records, oldest first")
 def recent_window(n: int = Query(300, ge=1, le=2000)):
     """Return the n most recent full records (with sensors), oldest first.
 
@@ -114,16 +124,20 @@ def recent_window(n: int = Query(300, ge=1, le=2000)):
     return rows
 
 
-@router.get("/{reading_id}", response_model=ReadingOut)
+@router.get("/{reading_id}", response_model=ReadingOut,
+            summary="Get a reading by id", response_description="The requested reading")
 def get_reading(reading_id: int):
+    """Fetch one document by its reading_id. Returns 404 if not found."""
     doc = col.find_one({"reading_id": reading_id})
     if not doc:
         raise HTTPException(404, f"reading {reading_id} not found")
     return _out(doc)
 
 
-@router.put("/{reading_id}", response_model=ReadingOut)
+@router.put("/{reading_id}", response_model=ReadingOut,
+            summary="Update a reading", response_description="The updated reading")
 def update_reading(reading_id: int, r: ReadingUpdate):
+    """Partially update a document. Only the fields supplied are changed."""
     updates = r.model_dump(exclude_unset=True)
     if not updates:
         raise HTTPException(422, "No fields provided to update")
@@ -149,8 +163,10 @@ def update_reading(reading_id: int, r: ReadingUpdate):
     return _out(doc)
 
 
-@router.delete("/{reading_id}", response_model=Message)
+@router.delete("/{reading_id}", response_model=Message,
+               summary="Delete a reading", response_description="Deletion confirmation")
 def delete_reading(reading_id: int):
+    """Delete a document by reading_id. Returns 404 if it does not exist."""
     result = col.delete_one({"reading_id": reading_id})
     if result.deleted_count == 0:
         raise HTTPException(404, f"reading {reading_id} not found")
