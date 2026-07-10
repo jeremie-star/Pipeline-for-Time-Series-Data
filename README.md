@@ -1,77 +1,67 @@
-# Building a Pipeline for Time-Series Data
+# Time-Series Pipeline — Appliances Energy
 
-An end-to-end pipeline over the **UCI Appliances Energy Prediction** time-series
-dataset: exploratory analysis and forecasting, relational + document databases,
-a REST API, and a consolidated prediction script.
+End-to-end pipeline over the UCI Appliances Energy Prediction dataset: EDA and
+forecasting, a MySQL and a MongoDB database, a REST API, and a prediction script.
 
-> **Course:** Formative 1 — Building a Pipeline for Time Series Data
-> **Team (3):** Jeremie Iyamurinze · Celine Shoga · Gentil Tonny Christian Iradukunda
+Team (3): Jeremie Iyamurinze, Celine Shoga, Gentil Tonny Christian Iradukunda
 
 ## Dataset
-**Appliances Energy Prediction** (UCI) — 19,735 readings at **10-minute** granularity
-over ~4.5 months. Each reading has the target **appliance energy use (Wh)** plus
-9 indoor temperature + 9 humidity sensors and outdoor weather.
-`data/raw/energydata_complete.csv`.
+Appliances Energy Prediction (UCI) — 19,735 readings at 10-minute granularity over
+~4.5 months. Target: appliance energy use in Wh. Features: 9 indoor temperature and
+9 humidity sensors plus outdoor weather. File: `data/raw/energydata_complete.csv`.
 
-**Problem:** forecast short-term appliance energy use from recent usage history
-(lag / moving-average features) and environmental sensors — useful for demand
-awareness and load management.
+Goal: forecast short-term appliance energy use from recent usage (lag and
+moving-average features) and environmental sensors.
 
-## Repository structure
+## Layout
 ```
-.
-├── config.py                     # shared paths + DB credentials (env-overridable)
-├── requirements.txt
-├── data/
-│   ├── raw/energydata_complete.csv
-│   └── processed/
-├── task1_eda_modeling/           # Task 1  (Jeremie)  — EDA, features, model  [notebook]
-├── task2_databases/              # Task 2  (Celine)   — MySQL + MongoDB + ERD
-├── task3_api/                    # Task 3  (Gentil)   — FastAPI CRUD + time-series endpoints
-├── task4_prediction/             # Task 4  (Jeremie)  — end-to-end forecast script
-└── report/                       # PDF report source
+config.py                  shared paths + DB credentials (env-overridable)
+data/raw/                  the dataset
+task1_eda_modeling/        EDA, feature pipeline, model training (notebook)
+task2_databases/           MySQL + MongoDB schema, loaders, queries
+task3_api/                 FastAPI CRUD + time-series endpoints
+task4_prediction/          fetch -> preprocess -> load model -> forecast
 ```
 
 ## Setup
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-
-# databases (MySQL + MongoDB must be running locally)
-export MYSQL_PASSWORD='your_password'      # or edit config.py
+export MYSQL_PASSWORD='your_password'   # or edit config.py
+# MySQL and MongoDB must be running locally
 ```
 
-## Run the whole pipeline
+## Run
 ```bash
-# Task 1 - EDA + train model (creates models/model.pkl)
+# Task 1 — EDA + train model (writes task1_eda_modeling/models/model.pkl)
 jupyter nbconvert --to notebook --execute --inplace \
-    --ExecutePreprocessor.timeout=900 \
     task1_eda_modeling/Task1_EDA_and_Modeling.ipynb
 
-# Task 2 - build + load databases, run queries
+# Task 2 — load databases and run the queries
 python task2_databases/load_sql.py    && python task2_databases/run_sql_queries.py
 python task2_databases/load_mongo.py  && python task2_databases/run_mongo_queries.py
 
-# Task 3 - start the API
-( cd task3_api && uvicorn main:app --reload )      # http://127.0.0.1:8000/docs
-python task3_api/test_api.py                        # smoke-test all endpoints
+# Task 3 — start the API
+cd task3_api && uvicorn main:app --reload   # docs at http://127.0.0.1:8000/docs
+python task3_api/test_api.py                # smoke-test every endpoint
 
-# Task 4 - end-to-end forecast (API must be running)
+# Task 4 — end-to-end forecast (API must be running)
 python task4_prediction/predict.py
 ```
 
-## Tasks at a glance
-| Task | What | Owner | Folder |
-|---|---|---|---|
-| 1 | Time-series EDA, feature engineering, model + tuning | Jeremie | `task1_eda_modeling/` |
-| 2 | MySQL schema + ERD, MongoDB design, queries | Celine | `task2_databases/` |
-| 3 | FastAPI CRUD + latest/date-range endpoints (SQL & Mongo) | Gentil | `task3_api/` |
-| 4 | Fetch → preprocess → load model → forecast | Jeremie | `task4_prediction/` |
-
-See each task folder's `README.md` for details, and `report/report.md` for the
-full write-up and per-member contributions.
+## What each task does
+- Task 1 — Time-series EDA (7 analytical questions, incl. lag features and moving
+  averages), a shared feature pipeline (`preprocessing.py`), and 3 model experiments
+  with hyperparameter tuning. Best model: tuned Random Forest, test RMSE 58.14 Wh.
+  Figures and tables in `task1_eda_modeling/outputs/`.
+- Task 2 — MySQL schema (3 tables: `reading`, `indoor_climate`, `weather`) with ERD
+  (`erd/erd.png`), MongoDB `readings` collection with sample documents, and query
+  results in `task2_databases/outputs/`.
+- Task 3 — FastAPI service with full CRUD plus latest-record and date-range endpoints
+  over both MySQL and MongoDB.
+- Task 4 — Script that fetches a window from the API, preprocesses it with the Task 1
+  pipeline, loads `model.pkl`, and forecasts the latest record's usage.
 
 ## Requirements
-- Python 3.10+
-- MySQL server (running locally)
-- MongoDB server (running locally)
+Python 3.10+, a local MySQL server, and a local MongoDB server.
+Exact packages are pinned in `requirements.txt`.

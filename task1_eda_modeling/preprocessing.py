@@ -2,7 +2,7 @@
 
 This module is the single source of truth for how raw sensor rows are turned
 into model-ready features. It is imported by:
-  * train.py            (Task 1 - model training)
+  * Task1_EDA_and_Modeling.ipynb   (Task 1 - EDA + model training)
   * ../task4_prediction/predict.py (Task 4 - forecasting on a fetched record)
 
 Keeping the logic here guarantees the prediction script preprocesses data

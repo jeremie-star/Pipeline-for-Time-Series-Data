@@ -6,7 +6,7 @@ Consolidates the whole pipeline:
   3. LOAD    the trained model saved by the Task 1 notebook (model.pkl)
   4. PREDICT the appliance energy use for the most recent record (one-step-ahead)
 
-Run (API must be running - see task3_api/README.md):
+Run (API must be running - see the root README.md):
     python task4_prediction/predict.py
 
 Author: Jeremie Iyamurinze
