@@ -1,8 +1,3 @@
-"""Render the energy_ts ERD to erd.png (matplotlib, no external tools needed).
-
-Run:  python task2_databases/erd/build_erd.py
-Author: Celine Shoga
-"""
 import os
 
 import matplotlib
