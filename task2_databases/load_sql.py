@@ -1,15 +1,3 @@
-"""Task 2 - Load the Appliances Energy CSV into the MySQL schema.
-
-Run:  python task2_databases/load_sql.py
-
-Steps:
-  1. Executes sql/schema.sql (creates energy_ts + 3 tables)
-  2. Bulk-inserts the CSV into reading / indoor_climate / weather
-
-Credentials come from ../config.py (override with env vars, e.g. MYSQL_PASSWORD).
-
-Author: Celine Shoga
-"""
 import os
 import sys
 
