@@ -1,13 +1,3 @@
-"""Task 2 - Load the Appliances Energy CSV into MongoDB (energy_ts.readings).
-
-Run:  python task2_databases/load_mongo.py
-
-Builds one nested document per timestamp (indoor + weather sub-documents),
-creates the timestamp / reading_id indexes, and also writes the first two
-documents to mongodb/sample_documents.json for the report.
-
-Author: Celine Shoga
-"""
 import json
 import os
 import sys
